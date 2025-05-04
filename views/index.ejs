@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pro Chess Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .chessboard {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+        width: 90vmin;
+        height: 90vmin;
+        max-width: 600px;
+        max-height: 600px;
+        border: 8px solid #333;
+        border-radius: 10px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .square {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        user-select: none;
+      }
+
+      .square.light {
+        background-color: #f0d9b5;
+      }
+
+      .square.dark {
+        background-color: #b58863;
+      }
+
+      .piece {
+        cursor: grab;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      .piece.white {
+        color: white;
+        text-shadow: 1px 1px 2px black;
+      }
+
+      .piece.black {
+        color: black;
+      }
+
+      .dragging {
+        opacity: 0.4;
+        transform: scale(1.1);
+      }
+
+      .flipped {
+        transform: rotate(180deg);
+      }
+
+      .flipped .square,
+      .flipped .piece {
+        transform: rotate(180deg);
+      }
+
+      .highlight {
+        box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+      }
+
+      .captured-pieces {
+        position: absolute;
+        top: 20px;
+        right: -100px;
+        width: 200px;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        color: white;
+      }
+
+      .coordinates {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .coordinates span {
+        position: absolute;
+        color: white;
+        font-size: 12px;
+      }
+
+      .coordinates .file {
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .coordinates .rank {
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+      }
+
+      /* Chat UI */
+      .chat-container {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background-color: rgba(129, 88, 88, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        max-width: 300px;
+        width: 100%;
+      }
+
+      .chat-box {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+      }
+
+      .chat-input {
+        width: 80%;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .send-chat-btn {
+        padding: 5px 10px;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .send-chat-btn:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+
+  <body class="bg-zinc-900 text-white flex items-center justify-center min-h-screen">
+    <div class="chessboard">
+      <div class="coordinates">
+        <span class="file" style="top: 0; left: 12%;">a-h</span>
+        <span class="rank" style="top: 12%; left: 0;">1-8</span>
+      </div>
+      <div class="captured-pieces">
+        <div><strong>Captured Pieces</strong></div>
+        <div id="captured-white"></div>
+        <div id="captured-black"></div>
+      </div>
+    </div>
+
+    <!-- Chat UI -->
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box">
+        <!-- Messages will be appended here -->
+      </div>
+      <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." />
+      <button id="send-chat" class="send-chat-btn">Send</button>
+    </div>
+
+    <!-- Socket.IO -->
+    <script
+      src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+      integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Chess.js -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+      integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Game logic -->
+    <script src="/js/chessgame.js"></script>
+  </body>
+</html>
